@@ -1,0 +1,94 @@
+--create database SUSCloud ;
+
+--use SUSCloud;
+
+CREATE TABLE Products (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Name NVARCHAR(100) NOT NULL,
+    Price DECIMAL(18, 2) NOT NULL,
+    ImgUrl NVARCHAR(255) NOT NULL
+);
+
+
+CREATE PROCEDURE GetAllProducts
+AS
+BEGIN
+    SELECT * FROM Products;
+END;
+
+
+-- Insert books into the Products table with image URLs
+INSERT INTO Products (Name, Price, ImgUrl)
+VALUES
+('Cotton Candy Back', 9.99, 'images/cotton-candy-back.jpg'),
+('Cotton Candy', 12.99, 'images/cotton-candy.jpg'),
+('Dark Skies Back', 14.99, 'images/dark-skies-back.jpg'),
+('Dark Skies', 16.99, 'images/dark-skies.jpg'),
+('Fortune of Time Back', 19.99, 'images/fortune-of-time-back.jpg'),
+('Fortune of Time', 21.99, 'images/fortune-of-time.jpg'),
+('leaves and wonders', 40.99, 'images/leaves-and-wonders.jpg'),
+('Fortune of Time', 77.99, 'images/rock-in-the-ocean.jpg'),
+('vanish in the sunset', 55.99, 'images/vanish-in-the-sunset.jpg');
+
+
+
+
+
+CREATE TABLE Orders
+(
+    OrderId INT PRIMARY KEY IDENTITY(1,1),
+    OrderDate DATETIME NOT NULL DEFAULT GETDATE(),
+    TotalPrice DECIMAL(10,2) NULL
+);
+
+CREATE TABLE OrderDetails
+(
+    OrderDetailId INT PRIMARY KEY IDENTITY(1,1),
+    OrderId INT,
+    ProductId INT,
+    Quantity INT,
+    FOREIGN KEY (OrderId) REFERENCES Orders(OrderId),
+    FOREIGN KEY (ProductId) REFERENCES Products(Id)
+);
+
+
+CREATE TYPE ProductTableType AS TABLE
+(
+    ProductId INT,
+    Quantity INT
+);
+
+
+CREATE PROCEDURE PlaceOrder
+    @Products ProductTableType READONLY
+AS
+BEGIN
+    -- total price
+    DECLARE @TotalPrice DECIMAL(10,2) = (
+        SELECT SUM(p.Price * pr.Quantity)
+        FROM @Products pr
+        JOIN Products p ON p.Id = pr.ProductId
+    );
+
+    -- Insert into Orders table
+    INSERT INTO Orders (OrderDate, TotalPrice)
+    VALUES (GETDATE(), @TotalPrice);
+
+    DECLARE @OrderId INT = SCOPE_IDENTITY();
+
+    -- Insert into OrderDetails table
+    INSERT INTO OrderDetails (OrderId, ProductId, Quantity)
+    SELECT @OrderId, ProductId, Quantity
+    FROM @Products;
+END;
+
+
+
+  CREATE PROCEDURE GetProductById
+    @Id INT
+AS
+BEGIN
+    SELECT Id, Name, Price, ImgUrl
+    FROM Products
+    WHERE Id = @Id
+END

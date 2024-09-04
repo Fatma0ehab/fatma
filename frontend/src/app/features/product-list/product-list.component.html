@@ -1,0 +1,17 @@
+<div class="container">
+  <div class="row" *ngIf="products.length > 0; else noProducts">
+    <div class="col-md-4" *ngFor="let product of products">
+      <div class="card h-100 text-center">
+        <img [src]="getProductImageUrl(product.imgUrl)" alt="{{ product.name }}" class="card-img-top" />
+        <div class="card-body">
+          <h5 class="card-title">{{ product.name }}</h5>
+          <p class="card-text">${{ product.price | number: '1.2-2' }}</p>
+          <button (click)="addToCart(product)" class="btn btn-dark">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-template #noProducts>
+    <p>No products available.</p>
+  </ng-template>
+</div>

@@ -1,0 +1,26 @@
+.card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.card-img-top {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.btn {
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.btn:hover {
+  background-color: green; /* Custom color for hover */
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
